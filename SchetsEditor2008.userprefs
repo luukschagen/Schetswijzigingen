@@ -1,0 +1,14 @@
+﻿<Properties StartupConfiguration="{DFAFCB48-F6F8-4DBF-8D06-DF73455163EA}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="SchetsControl.cs">
+    <Files>
+      <File FileName="SchetsControl.cs" Line="16" Column="23" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.ItemProperties.SchetsEditor2008 PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MultiItemStartupConfigurations />
+</Properties>

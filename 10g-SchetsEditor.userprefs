@@ -1,0 +1,14 @@
+﻿<Properties StartupConfiguration="{8F81CD5E-F6A9-41CE-8E37-20C7280949E4}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Hoofdscherm.cs">
+    <Files>
+      <File FileName="Hoofdscherm.cs" Line="1" Column="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MultiItemStartupConfigurations />
+  <MonoDevelop.Ide.ItemProperties.10g-SchetsEditor PreferredExecutionTarget="MonoDevelop.Default" />
+</Properties>

@@ -1,6 +1,8 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "10g-SchetsEditor", "10g-SchetsEditor.csproj", "{8F81CD5E-F6A9-41CE-8E37-20C7280949E4}"
 EndProject
 Global
@@ -13,5 +15,8 @@ Global
 		{8F81CD5E-F6A9-41CE-8E37-20C7280949E4}.Debug|x86.Build.0 = Debug|x86
 		{8F81CD5E-F6A9-41CE-8E37-20C7280949E4}.Release|x86.ActiveCfg = Release|x86
 		{8F81CD5E-F6A9-41CE-8E37-20C7280949E4}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal

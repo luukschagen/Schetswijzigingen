@@ -4,6 +4,8 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Reflection;
 using System.Resources;
+using System.IO;
+using System.Linq;
 
 namespace SchetsEditor
 {
@@ -19,11 +21,31 @@ namespace SchetsEditor
                                  , Assembly.GetExecutingAssembly()
                                  );
 
+        public SchetsControl Schetscontrol
+        {
+            get
+            {
+                return schetscontrol;
+            }
+
+            set
+            {
+                schetscontrol = value;
+            }
+        }
+
         private void veranderAfmeting(object o, EventArgs ea)
         {
             schetscontrol.Size = new Size ( this.ClientSize.Width  - 70
                                           , this.ClientSize.Height - 50);
             paneel.Location = new Point(64, this.ClientSize.Height - 30);
+            Graphics g = schetscontrol.MaakBitmapGraphics();
+
+            foreach (SchetsItem i in schetscontrol.Itemlijst)
+            {
+                i.Tekenitem(g);
+            }
+            schetscontrol.Invalidate();
         }
 
         private void klikToolMenu(object obj, EventArgs ea)
@@ -38,7 +60,7 @@ namespace SchetsEditor
 
         private void afsluiten(object obj, EventArgs ea)
         {
-            this.Close();
+                this.Close();
         }
 
         public SchetsWin()
@@ -49,6 +71,8 @@ namespace SchetsEditor
                                     , new VolRechthoekTool()
                                     , new TekstTool()
                                     , new GumTool()
+                                    , new CirkelTool()
+                                    , new BolTool()
                                     };
             String[] deKleuren = { "Black", "Red", "Green", "Blue"
                                  , "Yellow", "Magenta", "Cyan" 
@@ -75,6 +99,8 @@ namespace SchetsEditor
             schetscontrol.KeyPress +=  (object o, KeyPressEventArgs kpea) => 
                                        {   huidigeTool.Letter  (schetscontrol, kpea.KeyChar); 
                                        };
+
+            this.FormClosing += Handle_FormClosing;
             this.Controls.Add(schetscontrol);
 
             menuStrip = new MenuStrip();
@@ -92,7 +118,9 @@ namespace SchetsEditor
         private void maakFileMenu()
         {   
             ToolStripMenuItem menu = new ToolStripMenuItem("File");
-            menu.MergeAction = MergeAction.MatchOnly;
+            menu.MergeAction = MergeAction.MatchOnly;  
+            menu.DropDownItems.Add("Opslaan Als Afbeelding", null, this.OpslaanAls);
+            menu.DropDownItems.Add("Opslaan Als Text", null, this.OpslaanAlsText);
             menu.DropDownItems.Add("Sluiten", null, this.afsluiten);
             menuStrip.Items.Add(menu);
         }
@@ -176,6 +204,87 @@ namespace SchetsEditor
                 cbb.Items.Add(k);
             cbb.SelectedIndex = 0;
             paneel.Controls.Add(cbb);
+        }
+
+        // NIEUW
+
+        private void OpslaanAls(object o, EventArgs ea)
+        {
+            SaveFileDialog dialoog = new SaveFileDialog();
+            dialoog.Filter = "Image Files(*.jpg; *.jpeg; *.bmp)|*.jpg; *.jpeg; *.bmp";
+            dialoog.Title = "Schets opslaan als";
+
+            DialogResult result = dialoog.ShowDialog();
+
+            if (result == DialogResult.OK)
+            {
+                this.Text = dialoog.FileName;
+                this.SchrijfNaarFile();
+            }
+            schetscontrol.MaakStartlijst();
+
+        }
+
+        private void OpslaanAlsText(object o, EventArgs ea)
+        {
+            SaveFileDialog dialoog = new SaveFileDialog();
+            dialoog.Filter = "Tekstfiles|*.txt|Alle files|*.*";
+            dialoog.Title = "Tekst Opslaan";
+
+            if (dialoog.ShowDialog() == DialogResult.OK)
+            {
+                this.Text = dialoog.FileName;
+                Opslaan.opslaan(dialoog.FileName, schetscontrol);
+            }
+            schetscontrol.MaakStartlijst();
+
+        }
+
+        private void OpslaanBitmap(object o, EventArgs ea)
+        {
+            if( this.Text == "")
+            OpslaanAls(o, ea);
+
+            else SchrijfNaarFile();
+
+        }
+
+        private void SchrijfNaarFile()
+        {
+            if (this.Text.EndsWith(".txt", StringComparison.Ordinal))
+                OpslaanAlsText(null, null);
+            else
+            {
+                Bitmap bitmap = schetscontrol.GeefBitmap;
+                bitmap.Save(this.Text);
+            }
+            schetscontrol.MaakStartlijst();
+
+        }
+        public void MaakbitmapvanFile(Bitmap b)
+
+        {
+            schetscontrol.nieuweBitmap(b);
+
+        }
+
+        // waarschuwing voor sluitend scherm
+        void Handle_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (!schetscontrol.Itemlijst.SequenceEqual(schetscontrol.Startlijst))
+            {
+                DialogResult result = MessageBox.Show("Er zijn niet opgeslagen wijzigingen. " +
+                                    "Wilt u deze alsnog opslaan?", "Opslaan",
+                                                  MessageBoxButtons.YesNoCancel);
+                if (result == DialogResult.Cancel)
+                    e.Cancel = true;
+
+                else if (result == DialogResult.Yes)
+                    OpslaanBitmap(null, new EventArgs());
+                    
+                
+                    
+            }
         }
     }
 }

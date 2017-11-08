@@ -45,6 +45,8 @@ namespace SchetsEditor
                 gr.DrawString   (tekst, font, kwast, 
                                               this.startpunt, StringFormat.GenericTypographic);
                 // gr.DrawRectangle(Pens.Black, startpunt.X, startpunt.Y, sz.Width, sz.Height);
+                // Voegt de text van de tool to aan de lijst met items
+                s.Itemlijst.Add(new TextItem(this.startpunt, s.PenKleur, c, font));
                 startpunt.X += (int)sz.Width;
                 s.Invalidate();
             }
@@ -91,17 +93,76 @@ namespace SchetsEditor
     {
         public override string ToString() { return "kader"; }
 
+        // Veranderd Muislos methode om toe te voegen aan lijst
+        public override void MuisLos(SchetsControl s, Point p)
+        {
+            base.MuisLos(s, p);
+            s.Itemlijst.Add(new RechthoekItem(startpunt, p, false, s.PenKleur));
+        }
+
         public override void Bezig(Graphics g, Point p1, Point p2)
         {   g.DrawRectangle(MaakPen(kwast,3), TweepuntTool.Punten2Rechthoek(p1, p2));
         }
     }
-    
-    public class VolRechthoekTool : RechthoekTool
+
+    //Deze class is bewerkt om nu te inheriten van Tweepunttool ipv rechthoektool.
+    //Dat werkte makkelijker met de nieuwe Itemlijst
+
+    public class VolRechthoekTool : TweepuntTool
     {
         public override string ToString() { return "vlak"; }
 
+        public override void MuisLos(SchetsControl s, Point p)
+        {
+            base.MuisLos(s, p);
+            s.Itemlijst.Add(new RechthoekItem(startpunt, p, true, s.PenKleur));
+        }
+
+        public override void Bezig(Graphics g, Point p1, Point p2)
+        {
+            g.DrawRectangle(MaakPen(kwast, 3), TweepuntTool.Punten2Rechthoek(p1, p2));
+        }
+
         public override void Compleet(Graphics g, Point p1, Point p2)
         {   g.FillRectangle(kwast, TweepuntTool.Punten2Rechthoek(p1, p2));
+        }
+    }
+
+    public class CirkelTool : TweepuntTool
+    {
+        public override string ToString() { return "Cirkel"; }
+
+        public override void MuisLos(SchetsControl s, Point p)
+        {
+            base.MuisLos(s, p);
+            s.Itemlijst.Add(new CirkelItem(startpunt, p, false, s.PenKleur));
+        }
+
+        public override void Bezig(Graphics g, Point p1, Point p2)
+        {
+            g.DrawEllipse(MaakPen(kwast, 3), TweepuntTool.Punten2Rechthoek(p1, p2));
+        }
+    }
+
+    //Deze class is ook bewerkt om te inheriten van Tweepunt, om dezelfde reden
+    public class BolTool : TweepuntTool
+    {
+        public override string ToString() { return "Bol"; }
+
+        public override void MuisLos(SchetsControl s, Point p)
+        {
+            base.MuisLos(s, p);
+            s.Itemlijst.Add(new CirkelItem(startpunt, p, true, s.PenKleur));
+        }
+
+        public override void Compleet(Graphics g, Point p1, Point p2)
+        {
+            g.FillEllipse(kwast, TweepuntTool.Punten2Rechthoek(p1, p2));
+        }
+
+        public override void Bezig(Graphics g, Point p1, Point p2)
+        {
+            g.DrawEllipse(MaakPen(kwast, 3), TweepuntTool.Punten2Rechthoek(p1, p2));
         }
     }
 
@@ -111,6 +172,12 @@ namespace SchetsEditor
 
         public override void Bezig(Graphics g, Point p1, Point p2)
         {   g.DrawLine(MaakPen(this.kwast,3), p1, p2);
+        }
+
+        public override void MuisLos(SchetsControl s, Point p)
+        {
+            base.MuisLos(s, p);
+            s.Itemlijst.Add(new LijnItem(startpunt, p, s.PenKleur));
         }
     }
 
@@ -128,8 +195,28 @@ namespace SchetsEditor
     {
         public override string ToString() { return "gum"; }
 
-        public override void Bezig(Graphics g, Point p1, Point p2)
-        {   g.DrawLine(MaakPen(Brushes.White, 7), p1, p2);
+        public override void MuisLos(SchetsControl s, Point p)
+        {
+            int x = s.Itemlijst.Count;
+            Graphics g = s.MaakBitmapGraphics();
+
+            for (int y = x - 1; y >= 0; y = y - 1)
+            {
+                if (s.Itemlijst[y].Raaktpunt(p, g))
+                { 
+                    s.Itemlijst.Remove(s.Itemlijst[y]);
+                    break;
+                }
+            }
+
+            s.Schets.Schoon();
+            s.Invalidate();
+
+            foreach (SchetsItem i in s.Itemlijst)
+            {
+                i.Tekenitem(g);
+            }
+            s.Invalidate();
         }
     }
 }
