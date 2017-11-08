@@ -7,6 +7,7 @@ namespace SchetsEditor
     public class Schets
     {
         private Bitmap bitmap;
+        public Bitmap openbitmap;
         
         public Schets()
         {
@@ -29,7 +30,26 @@ namespace SchetsEditor
                 bitmap = nieuw;
             }
         }
+
+        public void MaakBitmap(Bitmap b, Size sz)
+        {
+                Bitmap nieuw = new Bitmap(Math.Max(sz.Width, bitmap.Size.Width)
+                                     , Math.Max(sz.Height, bitmap.Size.Height)
+                                     );
+                Graphics gr = Graphics.FromImage(nieuw);
+                gr.FillRectangle(Brushes.White, 0, 0, sz.Width, sz.Height);
+                gr.DrawImage(b, 0, 0);
+                bitmap = nieuw;
+            
+        }
+
+        public Bitmap GeefBitmap
+        {
+            get { return bitmap; }
+
+        }
         public void Teken(Graphics gr)
+
         {
             gr.DrawImage(bitmap, 0, 0);
         }
